@@ -63,7 +63,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //asiganacion de rutas
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/productos', productosRouter); // new route for productos  // step 2
+app.use('/producto', productosRouter); // new route for productos  // step 2
 app.use('/empleados', empleadosRouter); // new route for empleados 
 app.use('/clientes', clientesRouter); // new route for clientes
 

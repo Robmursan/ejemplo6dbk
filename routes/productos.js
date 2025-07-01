@@ -15,8 +15,10 @@ const path = require('path');
 
 
 
+
 //ayudas para validar datos de entrada
 const {body, validationResult} = require('express-validator');
+const autentifica = require('../middleware/autentificajwt');
 
 //Metodos HTTP
 // GET, POST, PUT, DELETE, Fresco el panerai ! 
@@ -30,7 +32,7 @@ const {body, validationResult} = require('express-validator');
 // trabajan con url , funcion anonima y parametros que son req y res que son request y response
 
 //cuando se cominica 
-router.get('/', async function(req, res){
+router.get('/',autentifica, async function(req, res){
    /*  pro = [
         {codigo: 1, nombre: 'Fenix', descripcion: 'Ave de fuego', precio: 1000, existencia: 10},
         {codigo: 2, nombre: 'Unicornio', descripcion: 'Animal mitologico', precio: 2000, existencia: 5},
@@ -46,7 +48,7 @@ router.get('/', async function(req, res){
 //consultar un solo documento  
 
 //indica la ruta unica por que no se puede usar la misma ruta para varios metodos
-router.get('/nombre/:nombre', async (req, res) => {
+router.get('/nombre/:nombre',autentifica,async (req, res) => {
 
     //Se crea la variable a ytrave s de la dconsulta del parametro nombre 
     let producto = await Producto.findOne({nombre:req.params.nombre})
@@ -59,7 +61,7 @@ router.get('/nombre/:nombre', async (req, res) => {
     res.send({producto});
 });
 
-router.post('/', 
+router.post('/', autentifica,
     [   //validaciones de los datos de entrada
         /* body("codigo").isInt().withMessage("El codigo debe ser un numero entero"),
         body("nombre").isLength({min: 3}).withMessage("El nombre debe tener al menos 3 caracteres"), */
@@ -104,7 +106,7 @@ router.post('/',
 
     });
 //Metodo para modificar 
-router.put('/', async (req, res)=>{
+router.put('/', autentifica, async (req, res)=>{
     let pro = await Producto.findOne({nombre:req.body.nombre});
 
     if(!pro){
@@ -132,7 +134,7 @@ router.put('/', async (req, res)=>{
     res.send({pro_modificado});
 });
 
-router.delete('/borrar/nombre:', async(req, res)=>{
+router.delete('/borrar/:nombre',autentifica, async(req, res)=>{
     let pro =  await Producto.findOne({nombre:req.params.nombre});
 
     if(!pro){
@@ -140,6 +142,8 @@ router.delete('/borrar/nombre:', async(req, res)=>{
     }
 
     let prod_eliminado = await Producto.findOneAndDelete({nombre:req.params.nombre});
+    let urlfotoanterior = prod_eliminado.imgurl.split('/');//se divide la url en un array
+    await fs.unlink(path.resolve("almacen/img"+urlfotoanterior[4]));
     res.send({prod_eliminado})
 
 });
@@ -152,9 +156,9 @@ por lo menos debmos tener url y funcion anonima sin parametros
 
 
 
-module.exports = router;
+
 //metodo para actualizar donde primero se busca poir nombre 
-router.put('/',upload.single('imagen'), async(req,res)=>{
+router.put('/', autentifica, upload.single('imagen'), async(req,res)=>{
     let prod = await Producto.findOne({nombre:req.body.nombre});
 
     if(!prod){
@@ -183,6 +187,7 @@ router.put('/',upload.single('imagen'), async(req,res)=>{
     }
 
 });
+module.exports = router;
 
 
 
