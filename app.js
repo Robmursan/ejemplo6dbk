@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors'); // Importando cors para usar las peticiones cruzadas desde el Frontend
 const mongoose = require('mongoose'); // Importando mongoose para la conexión a la base de datos
-mongoose.connect('mongodb://127.0.0.1:27017/ejemplo6d');
+mongoose.connect('mongodb://127.0.0.1:27017/ejemplo6d02');
 //depues de la declaracion de variables se coloca la conexion a la base de datos
 //const mongoose = require('mongoose');
 //Listado de archivos de modelos
@@ -45,7 +45,7 @@ app.use('/foto', express.static(__dirname + '/almacen/img'));
 
 
 app.use(cors({
-  origin: "http://localhost:4200",
+  origin: "*",
   methods : ["POST", "GET","PUT","DELETE"],
   preflightContinue: false,
   optionsSuccessStatus : 204

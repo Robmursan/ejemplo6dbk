@@ -114,6 +114,7 @@ router.put('/', autentifica, async (req, res)=>{
     }    
 
     let pro_modificado = await Producto.findOneAndUpdate(
+
         //campo de filtrado
         {nombre:req.body.nombre},
         //campo que se modifican
@@ -122,7 +123,8 @@ router.put('/', autentifica, async (req, res)=>{
         nombre: req.body.nombre,
         descripcion: req.body.descripcion,
         precio: req.body.precio,
-        existencia: req.body.existencia  
+        existencia: req.body.existencia,
+        imgurl:req.file ? req.file.filename : null
         },
         //valores retornados 
 
@@ -164,8 +166,10 @@ router.put('/', autentifica, upload.single('imagen'), async(req,res)=>{
     if(!prod){
         return res.status(402).send("Producto no encontrado");
     }
+    
+    // con split se divide la url en un array de strings con el separador / en este caso
 
-    let urlfotoanterior = pro.img.split('/');
+    let urlfotoanterior = prod.img.split('/');
 
 
     console.log(req.file);
@@ -180,9 +184,13 @@ router.put('/', autentifica, upload.single('imagen'), async(req,res)=>{
         {new:true},
     );
 
-    if(req.file){//path busca y elimina 
-        await fs.unlink(path.resolve("almacen/img"+urlfotoanterior[4]));
+    if(req.file && urlfotoanterior[4]!=null){//path busca y elimina 
+        //validar que la imagen exista para modificar y en caso de no existir se inserta una imagen por defecto
+        //if(await fs.exists(path.resolve("almacen/img"+urlfotoanterior[4])))
 
+        await fs.unlink(path.resolve("almacen/img"+urlfotoanterior[4]));
+        //con un try catch se valida que la imagen exista y en caso de no existir se pide que se suba una imagen
+        
         res.send({pro_modificado});
     }
 

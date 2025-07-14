@@ -15,7 +15,11 @@ const productoSchema = new mongoose.Schema({
     precio:Number,
     imgurl:String
 
-});
+},
+{
+    timestamps: true
+}
+);
 
 // Método para establecer la URL de la imagen
 productoSchema.methods.setimgurl = function setimgurl(imagen){
